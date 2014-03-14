@@ -8,15 +8,19 @@ QT       += network
 
 QT       -= gui
 
+CONFIG += c++11
+
 TARGET = Qt-Web-Server
 TEMPLATE = lib
 
 DEFINES += QTWEBSERVER_LIBRARY
 
-SOURCES += QtWebServer.cpp
+SOURCES += QtWebServer.cpp \
+    QtWebThread.cpp
 
 HEADERS += QtWebServer.h\
-        qt-web-server_global.h
+        qt-web-server_global.h \
+    QtWebThread.h
 
 unix {
     target.path = /usr/lib

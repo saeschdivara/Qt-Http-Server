@@ -4,9 +4,11 @@
 #
 #-------------------------------------------------
 
-QT       += core
+QT       += core network
 
 QT       -= gui
+
+CONFIG += c++11
 
 TARGET = Test-Web-App
 CONFIG   += console
@@ -16,3 +18,10 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../dist/release/ -lQt-Web-Server
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../dist/debug/ -lQt-Web-Server
+else:unix: LIBS += -L$$PWD/../../dist/debug/ -lQt-Web-Server
+
+INCLUDEPATH += $$PWD/../../src/
+DEPENDPATH += $$PWD/../../src/

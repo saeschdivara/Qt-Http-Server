@@ -2,6 +2,7 @@
 #define QTWEBSERVER_GLOBAL_H
 
 #include <QtCore/qglobal.h>
+#include <QtCore/QObject>
 
 #if defined(QTWEBSERVER_LIBRARY)
 #  define QTWEBSERVERSHARED_EXPORT Q_DECL_EXPORT
