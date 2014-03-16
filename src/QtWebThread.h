@@ -2,7 +2,9 @@
 #define QTWEBTHREAD_H
 
 #include "qt-web-server_global.h"
+
 #include <QtCore/QThread>
+#include <QtNetwork/QTcpSocket>
 
 class QtWebThreadPrivate;
 
@@ -15,8 +17,16 @@ class QtWebThread : public QThread
         void setSocketHandle(qintptr handle);
         void setSecureSocket(bool isSecure);
 
+    Q_SIGNALS:
+        void everythingParsed();
+        void finishedThisRequest();
+
     protected Q_SLOTS:
         void startHandlingConnection();
+        void readyToRead();
+        void readyToReadPostData();
+        void parsePostData();
+        void readyToWrite();
         void finishConnection(qint64 bytes);
 
     protected:

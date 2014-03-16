@@ -41,6 +41,10 @@ void QtWebServer::incomingConnection(qintptr handle)
     thread->setSecureSocket(d->isUsingSecureConnections);
     thread->setSocketHandle(handle);
 
+    QObject::connect( thread, &QtWebThread::finishedThisRequest,
+                      thread, &QtWebThread::terminate
+                      );
+
     thread->start();
 
 //    if ( d->isUsingSecureConnections ) {

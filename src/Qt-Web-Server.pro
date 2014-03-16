@@ -16,11 +16,13 @@ TEMPLATE = lib
 DEFINES += QTWEBSERVER_LIBRARY
 
 SOURCES += QtWebServer.cpp \
-    QtWebThread.cpp
+    QtWebThread.cpp \
+    QtWebRequest.cpp
 
 HEADERS += QtWebServer.h\
         qt-web-server_global.h \
-    QtWebThread.h
+    QtWebThread.h \
+    QtWebRequest.h
 
 unix {
     target.path = /usr/lib
