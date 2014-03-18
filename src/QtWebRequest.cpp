@@ -9,6 +9,7 @@ class QtWebRequestPrivate
         QHash<QByteArray, QByteArray> headers;
 
         QHash<QByteArray, QByteArray> post;
+        QHash<QByteArray, QString> postFiles;
         QHash<QByteArray, QByteArray> get;
 };
 
@@ -86,4 +87,18 @@ QHash<QByteArray, QByteArray> QtWebRequest::post() const
     Q_D(const QtWebRequest);
 
     return d->post;
+}
+
+void QtWebRequest::insertPostFile(QByteArray key, QString fullFilePath)
+{
+    Q_D(QtWebRequest);
+
+    d->postFiles.insert(key, fullFilePath);
+}
+
+QHash<QByteArray, QString> QtWebRequest::files() const
+{
+    Q_D(const QtWebRequest);
+
+    return d->postFiles;
 }

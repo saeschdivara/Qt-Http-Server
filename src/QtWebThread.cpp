@@ -1,7 +1,9 @@
 #include "QtWebThread.h"
 #include "QtWebRequest.h"
 
+#include <QtCore/QDateTime>
 #include <QtCore/QDebug>
+#include <QtCore/QDir>
 #include <QtCore/QFile>
 
 class QtWebThreadPrivate
@@ -292,8 +294,17 @@ void QtWebThread::parsePostData()
             if ( indexOfBreak == -1 ) break;
             bodyData = bodyData.remove(indexOfBreak, line_break.length());
 
-            //
-            QFile file(fileNameValue);
+            // Create unique path so file names don't matter
+            QDateTime now = QDateTime::currentDateTimeUtc();
+            QString pathNowAddition = now.toString("ddMMyyyy_hhmmss.zzz");
+            QString uploadPath = "./file_upload/" + pathNowAddition;
+
+            QDir dir = QDir::current();
+            dir.mkpath(uploadPath);
+            QString cleanUploadPath = QDir::cleanPath(dir.absoluteFilePath(uploadPath));
+            QString filePath = cleanUploadPath + QDir::separator() + fileNameValue;
+
+            QFile file(filePath);
             if ( file.open(QIODevice::WriteOnly | QIODevice::Unbuffered) ) {
 
                 const int space = 10000;
@@ -322,6 +333,8 @@ void QtWebThread::parsePostData()
                 }
 
                 file.close();
+
+                d->request->insertPostFile(nameValue, filePath);
             }
         }
     }

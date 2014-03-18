@@ -41,6 +41,9 @@ class QtWebRequest : public QObject
         void insertPostValue(QByteArray key, QByteArray value);
         QHash<QByteArray, QByteArray> post() const;
 
+        void insertPostFile(QByteArray key, QString fullFilePath);
+        QHash<QByteArray, QString> files() const;
+
     protected:
         QtWebRequestPrivate * d_ptr;
 
