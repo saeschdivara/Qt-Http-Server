@@ -1,5 +1,6 @@
 #include "QtWebThread.h"
 #include "QtWebRequest.h"
+#include "QtWebResponse.h"
 
 #include <QtCore/QDateTime>
 #include <QtCore/QDebug>
@@ -34,6 +35,11 @@ QtWebThread::QtWebThread(QObject *parent) :
                       );
 
     setTerminationEnabled(true);
+}
+
+QtWebThread::~QtWebThread()
+{
+    delete d_ptr;
 }
 
 void QtWebThread::setSocketHandle(qintptr handle)
@@ -87,8 +93,6 @@ void QtWebThread::readyToRead()
                       );
 
     QByteArray data = d->socket->readAll();
-
-    //qDebug() << data;
 
     QByteArray methodString = data.left(3);
 
@@ -313,8 +317,6 @@ void QtWebThread::parsePostData()
                 data.reserve(space);
                 indexOfBreak = -1;
 
-                qDebug() << bodyData.indexOf("--\r\n");
-
                 while ( indexOfBreak == -1 ) {
                     data = bodyData.left(space);
 
@@ -330,6 +332,8 @@ void QtWebThread::parsePostData()
 
                         file.write(data);
                     }
+
+                    QThread::yieldCurrentThread();
                 }
 
                 file.close();
@@ -346,41 +350,14 @@ void QtWebThread::readyToWrite()
 
     qDebug() << currentThread() << "readyToWrite";
 
-    QObject::connect( d->socket, &QTcpSocket::bytesWritten,
-                      this, &QtWebThread::finishConnection,
+    QtWebRequest * request = d->request;
+    QTcpSocket * socket = d->socket;
+    QtWebResponse * response = new QtWebResponse(socket);
+
+    QObject::connect( response, &QtWebResponse::finishedConnection,
+                      this, &QtWebThread::finishedThisRequest,
                       Qt::DirectConnection
                       );
 
-    const char data[] = "HTTP/1.1 202 OK\r\n";
-    d->data.append(data);
-
-    QByteArray body("<html><body><form action=\".\" method=\"post\" enctype=\"multipart/form-data\">"
-                    "<input name=\"file_dd\" type=\"file\" /><input type=\"submit\" />"
-                    "</form></body></html>");
-
-    QByteArray header = "Content-Length; " + QByteArray::number(body.length()) + "\r\n";
-
-    d->data.append(header);
-    d->data.append("\r\n");
-    d->data.append(body);
-    d->data.append("\r\n");
-
-    d->bytesWritten = 0;
-
-    d->socket->write(d->data);
-}
-
-void QtWebThread::finishConnection(qint64 bytes)
-{
-    Q_D(QtWebThread);
-
-    qDebug() << currentThread() << "finishConnection";
-
-    d->bytesWritten += bytes;
-
-    if ( d->bytesWritten == d->data.size() ) {
-        d->socket->close();
-
-        Q_EMIT finishedThisRequest();
-    }
+    Q_EMIT clientConnectionReady(request, response);
 }

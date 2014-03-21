@@ -19,6 +19,11 @@ QtWebRequest::QtWebRequest(QObject *parent) :
 {
 }
 
+QtWebRequest::~QtWebRequest()
+{
+    delete d_ptr;
+}
+
 void QtWebRequest::setMethod(QtWebRequest::RequestMethod method)
 {
     Q_D(QtWebRequest);

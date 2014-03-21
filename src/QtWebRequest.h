@@ -1,17 +1,20 @@
 #ifndef QTWEBREQUEST_H
 #define QTWEBREQUEST_H
 
+#include "qt-web-server_global.h"
+
 #include <QObject>
 #include <QtCore/QByteArray>
 #include <QtCore/QHash>
 
 class QtWebRequestPrivate;
 
-class QtWebRequest : public QObject
+class QTWEBSERVERSHARED_EXPORT QtWebRequest : public QObject
 {
         Q_OBJECT
     public:
         explicit QtWebRequest(QObject *parent = 0);
+        virtual ~QtWebRequest();
 
         enum class RequestMethod {
             Unsupported = 0,

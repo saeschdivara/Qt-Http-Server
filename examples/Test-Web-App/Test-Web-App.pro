@@ -17,7 +17,8 @@ CONFIG   -= app_bundle
 TEMPLATE = app
 
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    WebAppServer.cpp
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../dist/release/ -lQt-Web-Server
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../dist/debug/ -lQt-Web-Server
@@ -25,3 +26,6 @@ else:unix: LIBS += -L$$PWD/../../dist/debug/ -lQt-Web-Server
 
 INCLUDEPATH += $$PWD/../../src/
 DEPENDPATH += $$PWD/../../src/
+
+HEADERS += \
+    WebAppServer.h

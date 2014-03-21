@@ -9,12 +9,18 @@ class QtWebServerPrivate
 {
     public:
         bool isUsingSecureConnections = false;
+        int threadCounter = 0;
 };
 
 QtWebServer::QtWebServer() :
     QTcpServer(0),
     d_ptr(new QtWebServerPrivate)
 {
+}
+
+QtWebServer::~QtWebServer()
+{
+    delete d_ptr;
 }
 
 void QtWebServer::setSecure(bool isSecure)
@@ -35,11 +41,20 @@ void QtWebServer::incomingConnection(qintptr handle)
 {
     Q_D(QtWebServer);
 
-    qDebug() << QThread::currentThread();
+    qDebug() << QThread::currentThread() << "incomingConnection";
 
     QtWebThread * thread = new QtWebThread(this);
     thread->setSecureSocket(d->isUsingSecureConnections);
     thread->setSocketHandle(handle);
+
+    d->threadCounter++;
+
+    thread->setObjectName(QString("Qt Web Worker %1#").arg(d->threadCounter));
+
+    QObject::connect( thread, &QtWebThread::clientConnectionReady,
+                      this, &QtWebServer::clientConnectionReady,
+                      Qt::DirectConnection
+                      );
 
     QObject::connect( thread, &QtWebThread::finishedThisRequest,
                       thread, &QtWebThread::terminate

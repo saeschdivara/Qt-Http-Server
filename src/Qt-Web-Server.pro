@@ -17,12 +17,14 @@ DEFINES += QTWEBSERVER_LIBRARY
 
 SOURCES += QtWebServer.cpp \
     QtWebThread.cpp \
-    QtWebRequest.cpp
+    QtWebRequest.cpp \
+    QtWebResponse.cpp
 
 HEADERS += QtWebServer.h\
         qt-web-server_global.h \
     QtWebThread.h \
-    QtWebRequest.h
+    QtWebRequest.h \
+    QtWebResponse.h
 
 unix {
     target.path = /usr/lib
