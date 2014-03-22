@@ -53,7 +53,7 @@ void QtWebServer::threadAvailable()
         qintptr handle = d->connectionQueue.dequeue();
         thread->setSocketHandle(handle);
 
-        thread->startHandlingConnection();
+        thread->invokeNewPower();
     }
     else {
         d->threadList[thread] = true;
@@ -70,72 +70,69 @@ void QtWebServer::incomingConnection(qintptr handle)
 
     qDebug() << d->threadCounter << "/" << d->maxThread;
 
-    if ( d->threadCounter == d->maxThread ) {
-        bool hasFreeThread = false;
-        qDebug() << "Have now max threads";
+    bool hasFreeThread = false;
+    qDebug() << "Have now max threads";
 
-        for ( QtWebThread * thread : d->threadList.keys() ) {
-            qDebug() << "Look at thread: " << thread << d->threadList.value(thread);
+    for ( QtWebThread * thread : d->threadList.keys() ) {
+        qDebug() << "Look at thread: " << thread << d->threadList.value(thread);
 
-            if ( d->threadList.value(thread) ) {
-                d->threadList[thread] = false;
-                hasFreeThread = true;
+        if ( d->threadList.value(thread) ) {
+            d->threadList[thread] = false;
+            hasFreeThread = true;
 
-                thread->setSecureSocket(d->isUsingSecureConnections);
-                thread->setSocketHandle(handle);
+            thread->setSecureSocket(d->isUsingSecureConnections);
+            thread->setSocketHandle(handle);
 
-                thread->startHandlingConnection();
+            thread->invokeNewPower();
 
-                break;
-            }
+            break;
         }
+    }
 
-        if ( !hasFreeThread ) {
+    if ( !hasFreeThread ) {
+
+        if ( d->threadCounter == d->maxThread ) {
             d->connectionQueue.enqueue(handle);
         }
-    }
-    else {
-        QtWebThread * thread = new QtWebThread(this);
-        thread->setSecureSocket(d->isUsingSecureConnections);
-        thread->setSocketHandle(handle);
+        else {
+            QtWebThread * thread = new QtWebThread(this);
+            thread->setSecureSocket(d->isUsingSecureConnections);
+            thread->setSocketHandle(handle);
 
-        d->threadList.insert(thread, false);
+            d->threadList.insert(thread, false);
 
-        d->threadCounter++;
+            d->threadCounter++;
 
-        thread->setObjectName(QString("Qt Web Worker %1#").arg(d->threadCounter));
+            thread->setObjectName(QString("Qt Web Worker %1#").arg(d->threadCounter));
 
-        QObject::connect( thread, &QtWebThread::clientConnectionReady,
-                          this, &QtWebServer::clientConnectionReady,
-                          Qt::DirectConnection
-                          );
+            QObject::connect( thread, &QtWebThread::clientConnectionReady,
+                              this, &QtWebServer::clientConnectionReady,
+                              Qt::DirectConnection
+                              );
 
-        QObject::connect( thread, &QtWebThread::finishedThisRequest,
-                          this, &QtWebServer::threadAvailable
-                          );
+            QObject::connect( thread, &QtWebThread::finishedThisRequest,
+                              this, &QtWebServer::threadAvailable
+                              );
 
-//        QObject::connect( thread, &QtWebThread::finishedThisRequest,
-//                          thread, &QtWebThread::terminate
-//                          );
-
-        thread->start();
+            thread->start();
+        }
     }
 
-//    if ( d->isUsingSecureConnections ) {
-//        QSslSocket *serverSocket = new QSslSocket;
-//        if (serverSocket->setSocketDescriptor(handle)) {
-//            connect(serverSocket, &QSslSocket::encrypted,
-//                    this, &QtWebServer::ready
-//                    );
-//            serverSocket->startServerEncryption();
-//        } else {
-//            delete serverSocket;
-//        }
-//    }
-//    else {
-//        connect(serverSocket, &QSslSocket::encrypted,
-//                this, &QtWebServer::ready
-//                );
-//        QTcpServer::incomingConnection(handle);
-//    }
+    //    if ( d->isUsingSecureConnections ) {
+    //        QSslSocket *serverSocket = new QSslSocket;
+    //        if (serverSocket->setSocketDescriptor(handle)) {
+    //            connect(serverSocket, &QSslSocket::encrypted,
+    //                    this, &QtWebServer::ready
+    //                    );
+    //            serverSocket->startServerEncryption();
+    //        } else {
+    //            delete serverSocket;
+    //        }
+    //    }
+    //    else {
+    //        connect(serverSocket, &QSslSocket::encrypted,
+    //                this, &QtWebServer::ready
+    //                );
+    //        QTcpServer::incomingConnection(handle);
+    //    }
 }

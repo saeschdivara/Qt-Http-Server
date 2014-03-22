@@ -1,4 +1,5 @@
 #include "QtWebThread.h"
+#include "QtWebThreadController.h"
 #include "QtWebRequest.h"
 #include "QtWebResponse.h"
 
@@ -10,6 +11,8 @@
 class QtWebThreadPrivate
 {
     public:
+        QtWebThreadController * controller;
+
         qintptr socketHandle;
         bool isUsingSecureConnections;
 
@@ -29,8 +32,13 @@ QtWebThread::QtWebThread(QObject *parent) :
     d_ptr(new QtWebThreadPrivate)
 {
     QObject::connect( this, &QtWebThread::started,
-                      this, &QtWebThread::startHandlingConnection,
+                      this, &QtWebThread::onStartUp,
                       // This is needed so the slots is still in the same thread
+                      Qt::DirectConnection
+                      );
+
+    QObject::connect( this, &QtWebThread::everythingParsed,
+                      this, &QtWebThread::readyToWrite,
                       Qt::DirectConnection
                       );
 
@@ -58,7 +66,28 @@ void QtWebThread::setSecureSocket(bool isSecure)
 
 void QtWebThread::invokeNewPower()
 {
-    //
+    Q_EMIT restart();
+}
+
+void QtWebThread::onStartUp()
+{
+    Q_D(QtWebThread);
+
+    qDebug() << currentThread() << "onStartUp";
+
+    d->controller = new QtWebThreadController;
+
+    QObject::connect( this, &QtWebThread::restart,
+                      d->controller, &QtWebThreadController::connectionToHandle,
+                      Qt::QueuedConnection
+                      );
+
+    QObject::connect( d->controller, &QtWebThreadController::connectionToHandle,
+                      this, &QtWebThread::startHandlingConnection,
+                      Qt::DirectConnection
+                      );
+
+    startHandlingConnection();
 }
 
 void QtWebThread::startHandlingConnection()
@@ -72,11 +101,6 @@ void QtWebThread::startHandlingConnection()
 
     QObject::connect( d->socket, &QTcpSocket::readyRead,
                       this, &QtWebThread::readyToRead,
-                      Qt::DirectConnection
-                      );
-
-    QObject::connect( this, &QtWebThread::everythingParsed,
-                      this, &QtWebThread::readyToWrite,
                       Qt::DirectConnection
                       );
 }

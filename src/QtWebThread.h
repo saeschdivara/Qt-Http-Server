@@ -22,6 +22,7 @@ class QTWEBSERVERSHARED_EXPORT QtWebThread : public QThread
         void setSecureSocket(bool isSecure);
 
     Q_SIGNALS:
+        void restart();
         void everythingParsed();
         void clientConnectionReady(QtWebRequest *, QtWebResponse *);
         void finishedThisRequest();
@@ -30,6 +31,7 @@ class QTWEBSERVERSHARED_EXPORT QtWebThread : public QThread
         void invokeNewPower();
 
     protected Q_SLOTS:
+        void onStartUp();
         void startHandlingConnection();
         void readyToRead();
         void readyToReadPostData();
