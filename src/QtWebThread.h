@@ -26,6 +26,9 @@ class QTWEBSERVERSHARED_EXPORT QtWebThread : public QThread
         void clientConnectionReady(QtWebRequest *, QtWebResponse *);
         void finishedThisRequest();
 
+    public Q_SLOTS:
+        void invokeNewPower();
+
     protected Q_SLOTS:
         void startHandlingConnection();
         void readyToRead();

@@ -22,6 +22,9 @@ class QTWEBSERVERSHARED_EXPORT QtWebServer : public QTcpServer
     Q_SIGNALS:
         void clientConnectionReady(QtWebRequest *, QtWebResponse *);
 
+    protected Q_SLOTS:
+        void threadAvailable();
+
     protected:
         QtWebServerPrivate * d_ptr;
 

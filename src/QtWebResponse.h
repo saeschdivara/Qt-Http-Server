@@ -88,6 +88,7 @@ class QTWEBSERVERSHARED_EXPORT QtWebResponse : public QObject
         virtual ~QtWebResponse();
 
         void setStatus(StatusCode code, const QByteArray &reasonPhrase);
+        void addHeader(const QByteArray & key, const QByteArray & value);
         void write(const QByteArray & data);
         void end();
 

@@ -1,5 +1,7 @@
 #include "QtWebResponse.h"
 
+#include <QtCore/QList>
+#include <QtCore/QPair>
 #include <QtCore/QThread>
 
 #define CRLF "\r\n"
@@ -15,6 +17,8 @@ class QtWebResponsePrivate
 
         QtWebResponse::StatusCode status;
         QByteArray reason;
+
+        QList< QPair<QByteArray, QByteArray> > headers;
 };
 
 QtWebResponse::QtWebResponse(QTcpSocket *socket, QObject *parent) :
@@ -42,6 +46,14 @@ void QtWebResponse::setStatus(QtWebResponse::StatusCode code, const QByteArray &
     qDebug() << QThread::currentThread() << "setStatus";
 
     d->status = code;
+    d->reason = reasonPhrase;
+}
+
+void QtWebResponse::addHeader(const QByteArray &key, const QByteArray &value)
+{
+    Q_D(QtWebResponse);
+
+    d->headers << qMakePair(key, value);
 }
 
 void QtWebResponse::write(const QByteArray &data)
@@ -62,9 +74,20 @@ void QtWebResponse::end()
     QByteArray start = "HTTP/1.1 " + QByteArray::number(int(d->status)) + " " + d->reason + CRLF;
     d->data.append(start);
 
-    QByteArray header = "Content-Length; " + QByteArray::number(d->bodyData.length()) + CRLF;
+    QByteArray headers = "Content-Length; " + QByteArray::number(d->bodyData.length()) + CRLF;
 
-    d->data.append(header);
+    for ( QPair<QByteArray, QByteArray> headerPair : d->headers ) {
+        QByteArray header;
+
+        header += headerPair.first;
+        header += ": ";
+        header += headerPair.second;
+        header += CRLF;
+
+        headers += header;
+    }
+
+    d->data.append(headers);
     d->data.append(CRLF);
     d->data.append(d->bodyData);
     d->data.append(CRLF);

@@ -56,6 +56,11 @@ void QtWebThread::setSecureSocket(bool isSecure)
     d->isUsingSecureConnections = isSecure;
 }
 
+void QtWebThread::invokeNewPower()
+{
+    //
+}
+
 void QtWebThread::startHandlingConnection()
 {
     Q_D(QtWebThread);
