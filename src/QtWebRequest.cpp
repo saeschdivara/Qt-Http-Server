@@ -3,6 +3,8 @@
 class QtWebRequestPrivate
 {
     public:
+        QString ip;
+
         QtWebRequest::RequestMethod method;
         QByteArray requestPath;
         QtWebRequest::HttpVersion httpVersion;
@@ -22,6 +24,20 @@ QtWebRequest::QtWebRequest(QObject *parent) :
 QtWebRequest::~QtWebRequest()
 {
     delete d_ptr;
+}
+
+void QtWebRequest::setIP(const QString &ip)
+{
+    Q_D(QtWebRequest);
+
+    d->ip = ip;
+}
+
+QString QtWebRequest::ip() const
+{
+    Q_D(const QtWebRequest);
+
+    return d->ip;
 }
 
 void QtWebRequest::setMethod(QtWebRequest::RequestMethod method)

@@ -7,6 +7,7 @@
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
+#include <QtNetwork/QHostAddress>
 
 class QtWebThreadPrivate
 {
@@ -126,6 +127,8 @@ void QtWebThread::readyToRead()
     QByteArray methodString = data.left(3);
 
     d->request = new QtWebRequest;
+    d->request->setIP(d->socket->peerAddress().toString());
+
     QByteArray CRLF("\r\n");
 
     // Method

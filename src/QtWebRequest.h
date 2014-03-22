@@ -29,6 +29,9 @@ class QTWEBSERVERSHARED_EXPORT QtWebRequest : public QObject
             v1_1 = 2
         };
 
+        void setIP(const QString & ip);
+        QString ip() const;
+
         void setMethod(RequestMethod method);
         RequestMethod method() const;
 
