@@ -43,7 +43,7 @@ QDateTime QtWebResponse::Helper::toDateTime(const QByteArray &headerValue,
     return defaultValue;
 }
 
-static qint64 bufferSize = 4000;
+static qint64 bufferSize = 40000;
 
 inline static QList< QPair<qulonglong, qulonglong> >
 ranges(const QHash<QByteArray, QByteArray> &headers, qulonglong fileSize)
@@ -54,14 +54,14 @@ ranges(const QHash<QByteArray, QByteArray> &headers, qulonglong fileSize)
     QList< QPair<qulonglong, qulonglong> > ranges;
 
     QList<QByteArray> rangeHeaders(headers.values("Range"));
-    foreach (QByteArray rangesSpecifier, rangeHeaders) {
+    for (QByteArray rangesSpecifier : rangeHeaders) {
         static const QByteArray bytesUnit("bytes=");
         if (!rangesSpecifier.startsWith(bytesUnit))
             continue;
 
         QList<QByteArray> rangeSet(rangesSpecifier.mid(bytesUnit.size())
                                    .split(','));
-        foreach (QByteArray rangeSpec, rangeSet) {
+        for (QByteArray rangeSpec : rangeSet) {
             rangeSpec = rangeSpec.trimmed();
 
             if (rangeSpec.startsWith('-')) {
