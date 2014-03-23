@@ -2,7 +2,9 @@
 #define QTWEBRESPONSE_H
 
 #include "qt-web-server_global.h"
+#include "QtWebRequest.h"
 
+#include <QtCore/QDateTime>
 #include <QtNetwork/QTcpSocket>
 
 class QtWebResponsePrivate;
@@ -84,9 +86,20 @@ class QTWEBSERVERSHARED_EXPORT QtWebResponse : public QObject
             NOT_EXTENDED                    = 510
         };
 
+        class Helper {
+            public:
+                static QByteArray fromDateTime(const QDateTime &dateTime);
+                static QDateTime toDateTime(const QByteArray &headerValue,
+                                             const QDateTime &defaultValue
+                                             = QDateTime());
+        };
+
         explicit QtWebResponse(QTcpSocket * socket, QObject *parent = 0);
         virtual ~QtWebResponse();
 
+        void serveStaticFile(const QString & dir, QtWebRequest *request);
+
+        void setStatus(StatusCode code);
         void setStatus(StatusCode code, const QByteArray &reasonPhrase);
         void addHeader(const QByteArray & key, const QByteArray & value);
         void write(const QByteArray & data);

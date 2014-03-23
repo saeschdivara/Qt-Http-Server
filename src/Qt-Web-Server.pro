@@ -19,14 +19,20 @@ SOURCES += QtWebServer.cpp \
     QtWebThread.cpp \
     QtWebRequest.cpp \
     QtWebResponse.cpp \
-    QtWebThreadController.cpp
+    QtWebThreadController.cpp \
+    private/Rfc1036.cpp \
+    private/Asctime.cpp \
+    private/Rfc1123.cpp
 
 HEADERS += QtWebServer.h\
         qt-web-server_global.h \
     QtWebThread.h \
     QtWebRequest.h \
     QtWebResponse.h \
-    QtWebThreadController.h
+    QtWebThreadController.h \
+    private/Rfc1123.h \
+    private/Rfc1036.h \
+    private/Asctime.h
 
 unix {
     target.path = /usr/lib

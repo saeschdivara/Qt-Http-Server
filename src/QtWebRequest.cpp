@@ -89,6 +89,20 @@ void QtWebRequest::setHeaders(QHash<QByteArray, QByteArray> headers)
     d->headers = headers;
 }
 
+bool QtWebRequest::containsHeader(QByteArray headerKey) const
+{
+    Q_D(const QtWebRequest);
+
+    return d->headers.contains(headerKey);
+}
+
+QByteArray QtWebRequest::headerValue(QByteArray headerKey) const
+{
+    Q_D(const QtWebRequest);
+
+    return d->headers.value(headerKey);
+}
+
 QHash<QByteArray, QByteArray> QtWebRequest::headers() const
 {
     Q_D(const QtWebRequest);

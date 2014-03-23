@@ -42,6 +42,8 @@ class QTWEBSERVERSHARED_EXPORT QtWebRequest : public QObject
         HttpVersion httpVersion() const;
 
         void setHeaders(QHash<QByteArray, QByteArray> headers);
+        bool containsHeader(QByteArray headerKey) const;
+        QByteArray headerValue(QByteArray headerKey) const;
         QHash<QByteArray, QByteArray> headers() const;
 
         void insertPostValue(QByteArray key, QByteArray value);
