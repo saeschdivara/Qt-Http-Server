@@ -97,7 +97,7 @@ class QTWEBSERVERSHARED_EXPORT QtWebResponse : public QObject
         explicit QtWebResponse(QTcpSocket * socket, QObject *parent = 0);
         virtual ~QtWebResponse();
 
-        void serveStaticFile(const QString & dir, QtWebRequest *request);
+        void serveStaticFile(const QString & dir, const QString &staticPath, QtWebRequest *request);
 
         void setStatus(StatusCode code);
         void setStatus(StatusCode code, const QByteArray &reasonPhrase);

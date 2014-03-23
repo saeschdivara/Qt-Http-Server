@@ -138,16 +138,18 @@ QtWebResponse::~QtWebResponse()
     delete d_ptr;
 }
 
-void QtWebResponse::serveStaticFile(const QString &dir, QtWebRequest *request)
+void QtWebResponse::serveStaticFile(const QString &dir,
+                                    const QString & staticPath,
+                                    QtWebRequest *request)
 {
     Q_D(QtWebResponse);
 
     QString fileName;
 
     QByteArray encoded = QByteArray::fromPercentEncoding(request->requestPath());
-    qDebug() << encoded;
+    encoded = encoded.replace(staticPath, "");
 
-    qDebug() << dir;
+    fileName = dir + encoded;
 
     // Check if method is alright
     {
