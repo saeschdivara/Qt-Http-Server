@@ -1,5 +1,7 @@
 #include "QtWebRequest.h"
 
+#include <QtCore/QUrlQuery>
+
 class QtWebRequestPrivate
 {
     public:
@@ -59,6 +61,20 @@ void QtWebRequest::setRequestPath(const QByteArray &path)
     Q_D(QtWebRequest);
 
     d->requestPath = path;
+
+    if ( path.contains('?') ) {
+        QList<QByteArray> splittedPath = path.split('?');
+        d->requestPath = splittedPath.at(0);
+
+        QUrlQuery query(splittedPath.at(1));
+
+        for ( QPair<QString, QString> itemPair : query.queryItems(QUrl::PrettyDecoded) ) {
+            QString key = itemPair.first;
+            QString value = itemPair.second;
+
+            d->get.insert(key.toUtf8(), value.toUtf8());
+        }
+    }
 }
 
 QByteArray QtWebRequest::requestPath() const
@@ -108,6 +124,20 @@ QHash<QByteArray, QByteArray> QtWebRequest::headers() const
     Q_D(const QtWebRequest);
 
     return d->headers;
+}
+
+void QtWebRequest::insertGetValue(QByteArray key, QByteArray value)
+{
+    Q_D(QtWebRequest);
+
+    d->get.insert(key, value);
+}
+
+QHash<QByteArray, QByteArray> QtWebRequest::get() const
+{
+    Q_D(const QtWebRequest);
+
+    return d->get;
 }
 
 void QtWebRequest::insertPostValue(QByteArray key, QByteArray value)

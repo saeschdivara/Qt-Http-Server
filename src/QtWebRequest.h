@@ -46,6 +46,9 @@ class QTWEBSERVERSHARED_EXPORT QtWebRequest : public QObject
         QByteArray headerValue(QByteArray headerKey) const;
         QHash<QByteArray, QByteArray> headers() const;
 
+        void insertGetValue(QByteArray key, QByteArray value);
+        QHash<QByteArray, QByteArray> get() const;
+
         void insertPostValue(QByteArray key, QByteArray value);
         QHash<QByteArray, QByteArray> post() const;
 

@@ -17,6 +17,9 @@ void WebAppServer::handleConnection(QtWebRequest * request, QtWebResponse * resp
 {
     qDebug() << QThread::currentThread() << "handleConnection";
 
+    qDebug() << request->requestPath();
+    qDebug() << request->get();
+
     QByteArray body("<html><body><form action=\".\" method=\"post\" enctype=\"multipart/form-data\">"
                     "<input name=\"file_dd\" type=\"file\" /><input type=\"submit\" />"
                     "</form></body></html>");
