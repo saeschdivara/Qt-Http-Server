@@ -43,7 +43,7 @@ QDateTime QtWebResponse::Helper::toDateTime(const QByteArray &headerValue,
     return defaultValue;
 }
 
-static qint64 bufferSize = 40000;
+static qint64 bufferSize = 1024 * 100;
 
 inline static QList< QPair<qulonglong, qulonglong> >
 ranges(const QHash<QByteArray, QByteArray> &headers, qulonglong fileSize)
@@ -409,9 +409,11 @@ void QtWebResponse::finishConnection(qint64 bytes)
     d->bytesWritten += bytes;
 
     bool isFinished =
-            (d->bytesWritten >= d->dataSize && d->dataSize > 0)
+            (d->bytesWritten == d->dataSize  && d->dataSize > 0)
             ||
             (d->bytesWritten >= d->data.size() && d->data.size() > 0);
+
+    qDebug() << d->bytesWritten << "/" << d->dataSize << "(" << isFinished << ")";
 
     if ( isFinished ) {
 
@@ -459,6 +461,6 @@ void QtWebResponse::endFile()
     Q_D(QtWebResponse);
 
     d->dataSize += sizeof(CRLF);
-    d->socket->write(CRLF);
+    d->socket->write(CRLF, sizeof(CRLF));
 }
 
