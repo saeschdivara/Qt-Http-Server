@@ -408,7 +408,13 @@ void QtWebResponse::finishConnection(qint64 bytes)
 
     d->bytesWritten += bytes;
 
-    if ( d->bytesWritten + d->bytesWritten >= d->dataSize ) {
+    bool isFinished =
+            (d->bytesWritten >= d->dataSize && d->dataSize > 0)
+            ||
+            (d->bytesWritten >= d->data.size() && d->data.size() > 0);
+
+    if ( isFinished ) {
+
         d->socket->close();
 
         Q_EMIT finishedConnection();
