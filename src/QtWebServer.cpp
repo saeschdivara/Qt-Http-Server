@@ -7,12 +7,14 @@
 #include <QtCore/QQueue>
 #include <QtNetwork/QSslSocket>
 
+const int MAX_THREADS = QThread::idealThreadCount() * 2;
+
 class QtWebServerPrivate
 {
     public:
         bool isUsingSecureConnections = false;
         int threadCounter = 0;
-        int maxThread = QThread::idealThreadCount() * 2;
+
         QHash<QtWebThread *, bool> threadList;
         QQueue<qintptr> connectionQueue;
 };
@@ -68,7 +70,7 @@ void QtWebServer::incomingConnection(qintptr handle)
 
     qDebug() << QThread::currentThread() << "incomingConnection";
 
-    qDebug() << d->threadCounter << "/" << d->maxThread;
+    qDebug() << d->threadCounter << "/" << MAX_THREADS;
 
     bool hasFreeThread = false;
     qDebug() << "Have now max threads";
@@ -91,7 +93,7 @@ void QtWebServer::incomingConnection(qintptr handle)
 
     if ( !hasFreeThread ) {
 
-        if ( d->threadCounter == d->maxThread ) {
+        if ( d->threadCounter == MAX_THREADS ) {
             d->connectionQueue.enqueue(handle);
         }
         else {

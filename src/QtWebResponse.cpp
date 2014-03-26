@@ -354,8 +354,6 @@ void QtWebResponse::setStatus(QtWebResponse::StatusCode code, const QByteArray &
 {
     Q_D(QtWebResponse);
 
-    qDebug() << QThread::currentThread() << "setStatus";
-
     d->status = code;
     d->reason = reasonPhrase;
 }
@@ -370,8 +368,6 @@ void QtWebResponse::addHeader(const QByteArray &key, const QByteArray &value)
 void QtWebResponse::write(const QByteArray &data)
 {
     Q_D(QtWebResponse);
-
-    qDebug() << QThread::currentThread() << "write";
 
     d->bodyData += data;
 }
@@ -412,14 +408,9 @@ void QtWebResponse::finishConnection(qint64 bytes)
 {
     Q_D(QtWebResponse);
 
-    qDebug() << QThread::currentThread() << "finishConnection";
-
     d->bytesWritten += bytes;
 
-    qDebug() << d->bytesWritten << "/" << d->data.size();
-    qDebug() << d->bytesWritten << "/" << d->dataSize;
-
-    if ( d->bytesWritten == d->data.size() || d->bytesWritten == d->dataSize ) {
+    if ( d->bytesWritten + d->bytesWritten >= d->dataSize ) {
         d->socket->close();
 
         Q_EMIT finishedConnection();
