@@ -376,8 +376,6 @@ void QtWebResponse::end()
 {
     Q_D(QtWebResponse);
 
-    qDebug() << QThread::currentThread() << "end";
-
     QByteArray start = "HTTP/1.1 " + QByteArray::number(int(d->status)) + " " + d->reason + CRLF;
     d->data.append(start);
 

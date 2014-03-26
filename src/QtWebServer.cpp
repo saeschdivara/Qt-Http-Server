@@ -60,8 +60,6 @@ void QtWebServer::threadAvailable()
     else {
         d->threadList[thread] = true;
     }
-
-    qDebug() << "thread: " << thread << d->threadList[thread];
 }
 
 void QtWebServer::incomingConnection(qintptr handle)
@@ -73,11 +71,8 @@ void QtWebServer::incomingConnection(qintptr handle)
     qDebug() << d->threadCounter << "/" << MAX_THREADS;
 
     bool hasFreeThread = false;
-    qDebug() << "Have now max threads";
 
     for ( QtWebThread * thread : d->threadList.keys() ) {
-        qDebug() << "Look at thread: " << thread << d->threadList.value(thread);
-
         if ( d->threadList.value(thread) ) {
             d->threadList[thread] = false;
             hasFreeThread = true;
