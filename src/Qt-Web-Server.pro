@@ -33,8 +33,3 @@ HEADERS += QtWebServer.h\
     private/Rfc1123.h \
     private/Rfc1036.h \
     private/Asctime.h
-
-unix {
-    target.path = /usr/lib
-    INSTALLS += target
-}
