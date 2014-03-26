@@ -118,6 +118,8 @@ class QtWebResponsePrivate
         QByteArray reason;
 
         QList< QPair<QByteArray, QByteArray> > headers;
+
+        qint64 dataSize = -1;
 };
 
 QtWebResponse::QtWebResponse(QTcpSocket *socket, QObject *parent) :
@@ -259,13 +261,17 @@ void QtWebResponse::serveStaticFile(const QString &dir,
 
         // Just send the entity
         setStatus(StatusCode::OK);
+        writeHeader();
+
+        d->dataSize += file.size();
 
         while (!file.atEnd()) {
-            d->socket << file.read(::bufferSize);
+            QByteArray data = file.read(::bufferSize);
+            d->socket->write(data);
             d->socket->flush();
         }
 
-        end();
+        endFile();
     } else if (ranges.size() == 1) {
         // ONE range
         static const QByteArray bytesUnit("bytes ");
@@ -411,11 +417,53 @@ void QtWebResponse::finishConnection(qint64 bytes)
     d->bytesWritten += bytes;
 
     qDebug() << d->bytesWritten << "/" << d->data.size();
+    qDebug() << d->bytesWritten << "/" << d->dataSize;
 
-    if ( d->bytesWritten == d->data.size() ) {
+    if ( d->bytesWritten == d->data.size() || d->bytesWritten == d->dataSize ) {
         d->socket->close();
 
         Q_EMIT finishedConnection();
     }
+}
+
+void QtWebResponse::writeHeader()
+{
+    Q_D(QtWebResponse);
+
+
+    d->bytesWritten = 0;
+    d->dataSize = 0;
+    QByteArray headerData;
+
+    QByteArray start = "HTTP/1.1 " + QByteArray::number(int(d->status)) + " " + d->reason + CRLF;
+    headerData.append(start);
+
+    QByteArray headers = "Content-Length; " + QByteArray::number(d->bodyData.length()) + CRLF;
+
+    for ( QPair<QByteArray, QByteArray> headerPair : d->headers ) {
+        QByteArray header;
+
+        header += headerPair.first;
+        header += ": ";
+        header += headerPair.second;
+        header += CRLF;
+
+        headers += header;
+    }
+
+    headerData.append(headers);
+    headerData.append(CRLF);
+
+    d->dataSize += headerData.size();
+
+    d->socket->write(headerData);
+}
+
+void QtWebResponse::endFile()
+{
+    Q_D(QtWebResponse);
+
+    d->dataSize += sizeof(CRLF);
+    d->socket->write(CRLF);
 }
 

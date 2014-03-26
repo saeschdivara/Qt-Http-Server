@@ -114,6 +114,9 @@ class QTWEBSERVERSHARED_EXPORT QtWebResponse : public QObject
     protected:
         QtWebResponsePrivate * d_ptr;
 
+        void writeHeader();
+        void endFile();
+
     private:
         Q_DECLARE_PRIVATE(QtWebResponse)
 };
