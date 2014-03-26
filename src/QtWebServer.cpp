@@ -12,7 +12,7 @@ class QtWebServerPrivate
     public:
         bool isUsingSecureConnections = false;
         int threadCounter = 0;
-        int maxThread = QThread::idealThreadCount();
+        int maxThread = QThread::idealThreadCount() * 2;
         QHash<QtWebThread *, bool> threadList;
         QQueue<qintptr> connectionQueue;
 };
