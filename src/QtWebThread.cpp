@@ -367,7 +367,7 @@ void QtWebThread::parsePostData()
                 while ( indexOfBreak == -1 ) {
                     data = bodyData.left(space);
 
-                    indexOfBreak = data.indexOf("--\r\n");
+                    indexOfBreak = data.indexOf("\r\n--");
 
                     if ( indexOfBreak == -1 ) {
                         bodyData = bodyData.remove(0, space);
@@ -376,6 +376,9 @@ void QtWebThread::parsePostData()
                     else {
                         data = bodyData.left(indexOfBreak);
                         bodyData = bodyData.remove(0, indexOfBreak);
+
+                        // Remove break
+                        bodyData = bodyData.remove(0, 2);
 
                         file.write(data);
                     }
