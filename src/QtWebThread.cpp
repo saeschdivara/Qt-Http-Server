@@ -225,6 +225,8 @@ void QtWebThread::readyToRead()
                               this, &QtWebThread::readyToReadPostData
                               );
 
+            parsePostData();
+
             Q_EMIT everythingParsed();
         }
     }
@@ -329,6 +331,14 @@ void QtWebThread::parsePostData()
 
             QByteArray fileNameValue = fileNamePart.left(fileNamePart.length() -1);
             fileNameValue = fileNameValue.right(fileNameValue.length() -1);
+
+            // In case anybody sends an empty file
+            if ( fileNameValue.isEmpty() ) {
+                QByteArray emptyFile = line_break + line_break + line_break;
+                auto indexOfNextStart = bodyData.indexOf(emptyFile);
+                bodyData = bodyData.remove(0, indexOfNextStart + emptyFile.size());
+                continue;
+            }
 
             auto indexOfContentType = bodyData.indexOf(contentType);
             if ( indexOfContentType == -1 ) break;
