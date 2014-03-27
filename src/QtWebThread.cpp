@@ -74,8 +74,6 @@ void QtWebThread::onStartUp()
 {
     Q_D(QtWebThread);
 
-    qDebug() << currentThread() << "onStartUp";
-
     d->controller = new QtWebThreadController;
 
     QObject::connect( this, &QtWebThread::restart,
@@ -95,8 +93,6 @@ void QtWebThread::startHandlingConnection()
 {
     Q_D(QtWebThread);
 
-    qDebug() << currentThread() << "startHandlingConnection";
-
     d->socket = new QTcpSocket;
     d->socket->setSocketDescriptor(d->socketHandle);
 
@@ -109,8 +105,6 @@ void QtWebThread::startHandlingConnection()
 void QtWebThread::readyToRead()
 {
     Q_D(QtWebThread);
-
-    qDebug() << currentThread() << "readyToRead" ;
 
     QObject::disconnect( d->socket, &QTcpSocket::readyRead,
                       this, &QtWebThread::readyToRead
@@ -243,8 +237,6 @@ void QtWebThread::readyToRead()
 void QtWebThread::readyToReadPostData()
 {
     Q_D(QtWebThread);
-
-    qDebug() << QThread::currentThread() << "readyToReadPostData";
 
     QByteArray newData = d->socket->readAll();
     d->requestData += newData;
@@ -402,8 +394,6 @@ void QtWebThread::parsePostData()
 void QtWebThread::readyToWrite()
 {
     Q_D(QtWebThread);
-
-    qDebug() << currentThread() << "readyToWrite";
 
     QtWebRequest * request = d->request;
     QTcpSocket * socket = d->socket;

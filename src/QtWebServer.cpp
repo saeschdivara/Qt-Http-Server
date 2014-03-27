@@ -49,8 +49,6 @@ void QtWebServer::threadAvailable()
     Q_D(QtWebServer);
     QtWebThread * thread = qobject_cast<QtWebThread *>(sender());
 
-    qDebug() << "Free thread: " << thread;
-
     if ( d->connectionQueue.size() > 0 ) {
         qintptr handle = d->connectionQueue.dequeue();
         thread->setSocketHandle(handle);
@@ -65,10 +63,6 @@ void QtWebServer::threadAvailable()
 void QtWebServer::incomingConnection(qintptr handle)
 {
     Q_D(QtWebServer);
-
-    qDebug() << QThread::currentThread() << "incomingConnection";
-
-    qDebug() << d->threadCounter << "/" << MAX_THREADS;
 
     bool hasFreeThread = false;
 
