@@ -461,6 +461,6 @@ void QtWebResponse::endFile()
     Q_D(QtWebResponse);
 
     d->dataSize += sizeof(CRLF);
-    d->socket->write(CRLF, sizeof(CRLF) - 1);
+    d->socket->write(CRLF, sizeof(CRLF));
 }
 
