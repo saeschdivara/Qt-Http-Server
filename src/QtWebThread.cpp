@@ -385,7 +385,7 @@ void QtWebThread::parsePostData()
 
                 file.close();
 
-                d->request->insertPostValue(nameValue, filePath);
+                d->request->insertPostValue(nameValue, filePath.toUtf8());
                 d->request->insertPostFile(nameValue, filePath);
             }
         }
