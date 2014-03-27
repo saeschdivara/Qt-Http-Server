@@ -385,6 +385,7 @@ void QtWebThread::parsePostData()
 
                 file.close();
 
+                d->request->insertPostValue(nameValue, filePath);
                 d->request->insertPostFile(nameValue, filePath);
             }
         }
