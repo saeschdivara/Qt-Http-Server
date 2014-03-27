@@ -112,7 +112,6 @@ void QtWebThread::readyToRead()
 
     qDebug() << currentThread() << "readyToRead" ;
 
-
     QObject::disconnect( d->socket, &QTcpSocket::readyRead,
                       this, &QtWebThread::readyToRead
                       );
@@ -219,8 +218,22 @@ void QtWebThread::readyToRead()
     if ( indexOfStart == 0 ) {
         d->requestData = data;
         d->postBoundary = contentType.mid(multiPart.length());
+
+        if ( data.endsWith("--\r\n") ) {
+
+            QObject::disconnect( d->socket, &QTcpSocket::readyRead,
+                              this, &QtWebThread::readyToReadPostData
+                              );
+
+            Q_EMIT everythingParsed();
+        }
     }
     else {
+
+        QObject::disconnect( d->socket, &QTcpSocket::readyRead,
+                          this, &QtWebThread::readyToReadPostData
+                          );
+
         Q_EMIT everythingParsed();
     }
 }
