@@ -287,6 +287,8 @@ void QtWebResponse::serveStaticFile(const QString &dir,
 
         file.seek(range.first);
 
+        writeHeader();
+
         qint64 remaining = 1 + range.second - range.first;
         while (remaining) {
             QByteArray chunk(file.read(qMin(remaining, ::bufferSize)));
@@ -411,9 +413,10 @@ void QtWebResponse::finishConnection(qint64 bytes)
     bool isFinished =
             (d->bytesWritten == d->dataSize  && d->dataSize > 0)
             ||
-            (d->bytesWritten >= d->data.size() && d->data.size() > 0);
+            (d->bytesWritten == d->data.size() && d->data.size() > 0);
 
     qDebug() << d->bytesWritten << "/" << d->dataSize << "(" << isFinished << ")";
+    qDebug() << d->bytesWritten << "/" << d->data.size() << "(" << isFinished << ")";
 
     if ( isFinished ) {
 
